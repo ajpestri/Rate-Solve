@@ -85,8 +85,6 @@ def generate_differential(initial_values,t_data,mechanism):
     t_out_array = np.array(t_data,ndmin=2).reshape(-1,1)
     yfit_out_array = np.array(y_fit,ndmin=2).T
     row_sums = np.sum(yfit_out_array,axis=1,keepdims=True)
-    print(row_sums)
-    print(yfit_out_array)
     ynorm = yfit_out_array/row_sums
     outdata = t_out_array
     outdata = np.append(outdata,ynorm,axis=1)
