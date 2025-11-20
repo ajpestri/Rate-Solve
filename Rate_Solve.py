@@ -23,8 +23,8 @@ import ttkthemes
 #to do
 #maybe
 #storing the mechanism the first time causes the canvas to resize. It's related to taking the screenshot, window resets to system DPI. currently using another package, but it only works on the primary monitor
-#add type restrictions to object entries (alpha numberic, numeric only)
-#ban "t" from input as it's a hardcoded variable in the differential solver
+#DONE: add type restrictions to object entries (alpha numberic, numeric only)
+#DONE: ban "t" from input as it's a hardcoded variable in the differential solver
 #add ability for users to change color scheme?
 #bug sometimes occurs where lines disconnect when click over text boxes to drag. Not able to reproduce reliably. Been around forever, very rare
 #DONE: put mechanism file and id boxes at bottom of buttons
@@ -605,7 +605,11 @@ class FlowChartApp:
 
     #Update text from box, and close entry box
     def update_text(self,text_id):
-        self.canvas.itemconfig(text_id, text=self.entry.get())      #get text from entry and enter into selected text box
+        good_characters,error_message = self.check_text(self.entry.get())
+        if good_characters:
+            self.canvas.itemconfig(text_id, text=self.entry.get())      #get text from entry and enter into selected text box
+        else:
+            self.print_to_window(self.terminal_window,error_message,'error_text')
         self.entry.destroy()                                        #delete entry box
         self.update_text_list()                                     #update all text lists
         self.update_tag_list()
@@ -614,6 +618,18 @@ class FlowChartApp:
         self.parent_menu = []
         for id in self.text_objects:
             self.parent_menu.append(self.canvas.itemcget(id,"text"))
+
+    def check_text(self,text):
+        if not text.isalnum():
+            error_text = 'Species names can only contain alphanumeric characters'
+            name_check = False
+        elif text == 't':
+            name_check = False
+            error_text = 't is reserved and cannot be a species name'
+        else:
+            name_check = True
+            error_text = ''
+        return name_check,error_text
 
     #update list of object titles
     def update_text_list(self):
@@ -979,7 +995,6 @@ class FlowChartApp:
                     upper_bounds[i] = upper_bounds[i] + upper_bounds[i]*.001
                 else:
                     upper_bounds[i] = upper_bounds[i] + .00001
-        print(initial_guesses)
         #print(lower_bounds,upper_bounds,initial_guesses)
         self.print_to_window(self.terminal_window,'Fitting...')
         data_array,report_array,variable_sizes,variable_lists,iterators,fit_quality = diffsolve.solve_differential(initial_guesses,lower_bounds,upper_bounds,datafile,mech_params)
