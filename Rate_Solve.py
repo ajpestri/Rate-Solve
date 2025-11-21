@@ -10,15 +10,24 @@ import sys
 import mech2eqn_array
 import diffsolve
 import diffgen
+import matplotlib
+matplotlib.use('TkAgg')                                         #allows plots from executable
 import matplotlib.pyplot as plt
 import distinctipy
 import numpy as np
 import pyautogui
 import random
 import ttkthemes
+import scipy                                                    #keep this to allow compiling all scipy packages
+from scipy.integrate import solve_ivp                           #need these as may not be properly compiled if only called from subfiles
+from scipy.optimize import least_squares
+from sympy import symbols, lambdify, sympify, parse_expr
 
 #Versions
 #RateSolve 1.0. Embedded MechDraw in solver and fitting, with GUI for parameter and file control
+
+#Compile command
+#pyinstaller Rate_Solve.py -F -n RateSolve_XX --copy-metadata distinctipy --icon RateSolve.ico
 
 #to do
 #maybe
