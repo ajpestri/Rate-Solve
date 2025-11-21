@@ -5,7 +5,6 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import least_squares
 from sympy import symbols, lambdify, sympify, parse_expr
 import mech2eqn_array
-import distinctipy
 
 #bound and guess values: rates, x=0 function value, baseline correction value
 #number of rate values = number rate constants
