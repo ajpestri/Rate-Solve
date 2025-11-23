@@ -34,18 +34,19 @@ from sympy import symbols, lambdify, sympify, parse_expr
 #storing the mechanism the first time causes the canvas to resize. It's related to taking the screenshot, window resets to system DPI. currently using another package, but it only works on the primary monitor
 #DONE: add type restrictions to object entries (alpha numberic, numeric only)
 #DONE: ban "t" from input as it's a hardcoded variable in the differential solver
-#add ability for users to change color scheme?
+#add ability for users to change color scheme? This will require a unified color scheme...
+#button to randomly make parameters within limits for dataset generation
 #bug sometimes occurs where lines disconnect when click over text boxes to drag. Not able to reproduce reliably. Been around forever, very rare
 #DONE: put mechanism file and id boxes at bottom of buttons
-#add default text to data and output boxes
+#DONE: add default text to data and output boxes
 
 #Bugs
-#TEST: initial point accounting for baseline seems to be wrong. (subtracting baseline before solving made system account for adjustment, and then account again by adding it back in). Need to test in user and data mode
+#DONE: initial point accounting for baseline seems to be wrong. It's working the way it should, need to be careful not to generate impossible data. Also discovered a bug in initial point pulling
 #DONE: adding noise results in points not adding to one
 #DONE: need clear all button for individual parameters
 #for file selectors, cannot select a folder without selecting a file, so cannot select an empty folder
 #need to think through logic of import and mech browse directory choosing
-#if directory is chosen, open file browser in that directory
+#DONE: if directory is chosen, open file browser in that directory
 #numbers in certain places as species names still breaks the solver
 #some file names seem to break things for some reason.
 #DONE: double check multiple starting species doesn't break things - update: it does. (seems fine. If using individual parameters can struggle to find good fit)
@@ -117,7 +118,7 @@ class FlowChartApp:
         self.object_number = "Column"
         self.default_param_values = [0, 0, 0, 10, 1, .1, 1, 1, 0]
 
-        #let's mess around with colors and shapes a bit
+        #let's mess around with colors and shapes a bit. This was a terrible idea
         #self.system_style = ttkthemes.ThemedStyle()
         self.system_style = ttk.Style()
         self.box_style = ttk.Style()
@@ -235,10 +236,12 @@ class FlowChartApp:
         self.data_file_label = ttk.Label(self.control_frame,text='Data File',font=('Arial',10)).grid(row=12,column=0,sticky='ws',pady=15)
         self.data_file_entry = ttk.Entry(self.control_frame,textvariable=())
         self.data_file_entry.grid(row=13,column=0,columnspan=3,stick='we')
+        self.data_file_entry.insert(0,"data_file.txt")
         self.data_file_button = ttk.Button(self.control_frame,text='Browse',command=self.browse_data_files).grid(row=13,column=3,sticky='we')
         self.result_file_label = ttk.Label(self.control_frame,text='Output File',font=('Arial',10)).grid(row=14,column=0,sticky='ws',pady=15)
         self.result_file_entry = ttk.Entry(self.control_frame,textvariable=())
         self.result_file_entry.grid(row=15,column=0,columnspan=3,stick='we')
+        self.result_file_entry.insert(0,"output_file.txt")
         self.result_file_button = ttk.Button(self.control_frame,text='Browse',command=self.browse_result_files).grid(row=15,column=3,sticky='we')
         self.solve_button = tk.Button(self.control_frame,text='Solve and Fit',command=lambda:self.solve_and_fit(),font=('Arial',10,'bold'))
         self.solve_button.grid(row=16,column=0,columnspan=2,pady=15,sticky='we')
@@ -693,9 +696,9 @@ class FlowChartApp:
             ycoord = yspot
         return(xcoord,ycoord)
 
-    def browse_files(self,box_title,filetype_array):
-        current_dir = os.getcwd()
-        fullfile = filedialog.askopenfilename(initialdir=current_dir,title=box_title,filetypes=filetype_array)
+    def browse_files(self,box_title,filetype_array,start_directory):
+        #current_dir = os.getcwd()
+        fullfile = filedialog.askopenfilename(initialdir=start_directory,title=box_title,filetypes=filetype_array)
         if fullfile:
             filepath = os.path.dirname(fullfile)
             filename = os.path.basename(fullfile)
@@ -706,30 +709,51 @@ class FlowChartApp:
             return(filepath,filename)
 
     def browse_mec_files(self):
-        [self.mec_filepath,self.mec_filename] = self.browse_files("Select Model File",[("mec files","*.mec"),("all files","*.*")])
-        if self.mec_filepath:
+        if self.mecfilebrowsed:
+            start_directory = self.mec_filepath
+        else:
+            start_directory = os.getcwd()
+        [filepath,filename] = self.browse_files("Select Model File",[("mec files","*.mec"),("all files","*.*")],start_directory)
+        if filepath:
             self.mecfilebrowsed = True
+            self.mec_filepath = filepath
+            self.mec_filename = filename
             self.file_box.delete(0,tk.END)
             self.file_box.insert(0,self.mec_filename)
+            return(True)
+        else:
+            return(False)
 
     def browse_data_files(self):
-        [self.data_filepath,self.data_filename] = self.browse_files("Select Data File",[("txt files","*.txt"),("all files","*.*")])
-        if self.data_filepath:
+        if self.datafilebrowsed:
+            start_directory = self.data_filepath
+        else:
+            start_directory = os.getcwd()
+        [filepath,filename] = self.browse_files("Select Data File",[("txt files","*.txt"),("all files","*.*")],start_directory)
+        if filepath:
             self.datafilebrowsed = True
+            self.data_filepath = filepath
+            self.data_filename = filename
             self.data_file_entry.delete(0,tk.END)
             self.data_file_entry.insert(0,self.data_filename)
 
     def browse_result_files(self):
-        [self.result_filepath,self.result_filename] = self.browse_files("Select Data File",[("txt files","*.txt"),("all files","*.*")])
-        if self.result_filepath:
+        if self.resultfilebrowsed:
+            start_directory = self.result_filepath
+        else:
+            start_directory = os.getcwd()
+        [filepath,filename] = self.browse_files("Select Data File",[("txt files","*.txt"),("all files","*.*")],start_directory)
+        if filepath:
             self.resultfilebrowsed = True
+            self.result_filepath = filepath
+            self.result_filename = filename
             self.result_file_entry.delete(0,tk.END)
             self.result_file_entry.insert(0,self.result_filename)
 
     #import model from previously made file   
     def import_model(self):
-        self.browse_mec_files()
-        if not self.mec_filename:
+        mec_search = self.browse_mec_files()
+        if not mec_search:
             return
         if self.mecfilebrowsed:
             output_filepath = self.mec_filepath
@@ -879,7 +903,7 @@ class FlowChartApp:
             self.print_to_window(self.terminal_window,'Unable to open data file','error_text')
             return
         num_data_columns = int(rawdata.size/len(rawdata)-1)
-        y0_data = rawdata[:,1]
+        y0_data = rawdata[0,1:]
 
         number_rates = len(rates)
         number_species = len(species)

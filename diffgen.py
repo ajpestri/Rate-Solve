@@ -32,14 +32,14 @@ def solve_ode(params, t_span, size_array, t_eval, ode_values):
     y0_sub = np.zeros(size_array[1])
     i=0
     for base in bc:
-        y0_sub[inter_counter[i]] = y0[i] - 0 #base
+        y0_sub[inter_counter[i]] = y0[i] - base
         i=i+1
     sol = solve_ivp(lambda t, y: ode_system(t, y, rates, ode_func), t_span, y0_sub, t_eval=t_eval, method='RK45')
     y_comb = hidinter_combine(sol.y,interposit,size_array[2])
-    y_corr = np.empty([np.size(y_comb,0),np.size(y_comb,1)])
+    y_corr = y_comb #np.empty([np.size(y_comb,0),np.size(y_comb,1)])
     i = 0
     for baseline in bc:
-        y_corr[i,:] = y_comb[i,:] + baseline
+        y_corr[i,:] = y_corr[i,:] + baseline
         i=i+1
     y_hidden = sol.y
     i=0
