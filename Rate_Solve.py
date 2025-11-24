@@ -3,7 +3,7 @@ from tkinter import messagebox, scrolledtext, filedialog, ttk, Toplevel
 import math as math
 import re as re
 import mss
-import mss.tools
+from mss import mss, tools
 import os
 import ast
 import sys
@@ -32,32 +32,16 @@ from sympy import symbols, lambdify, sympify, parse_expr
 #to do
 #maybe
 #storing the mechanism the first time causes the canvas to resize. It's related to taking the screenshot, window resets to system DPI. currently using another package, but it only works on the primary monitor
-#DONE: add type restrictions to object entries (alpha numberic, numeric only)
-#DONE: ban "t" from input as it's a hardcoded variable in the differential solver
 #add ability for users to change color scheme? This will require a unified color scheme...
 #button to randomly make parameters within limits for dataset generation
-#bug sometimes occurs where lines disconnect when click over text boxes to drag. Not able to reproduce reliably. Been around forever, very rare
-#DONE: put mechanism file and id boxes at bottom of buttons
-#DONE: add default text to data and output boxes
 
 #Bugs
-#DONE: initial point accounting for baseline seems to be wrong. It's working the way it should, need to be careful not to generate impossible data. Also discovered a bug in initial point pulling
-#DONE: adding noise results in points not adding to one
-#DONE: need clear all button for individual parameters
 #for file selectors, cannot select a folder without selecting a file, so cannot select an empty folder
-#need to think through logic of import and mech browse directory choosing
-#DONE: if directory is chosen, open file browser in that directory
 #numbers in certain places as species names still breaks the solver
 #some file names seem to break things for some reason.
-#DONE: double check multiple starting species doesn't break things - update: it does. (seems fine. If using individual parameters can struggle to find good fit)
-#figure out how fucking themes work
-#DONE: drop down boxes scale differently from object rectangles, can overlap on some screens
-#DONE: shift drop down boxes on top of one another instead of side by side
-#DONE: text box needs to scroll automatically
-#DONE: need to update file reader (multiple delimiters) for the plot function (done for solve and generate)
 #fix spacing of data and output file titles over boxes
-#fix UI freeze during fitting
-
+#fix UI freeze during fitting large mechanisms - this needs a fundamental rework of the solver
+#bug sometimes occurs where lines disconnect when click over text boxes to drag. Not able to reproduce reliably. Been around forever, very rare
 
 #this all badly needs a refactor
 

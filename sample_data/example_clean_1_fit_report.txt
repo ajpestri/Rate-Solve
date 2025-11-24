@@ -1,0 +1,27 @@
+Species   	RSS       	R-Squared 	x0 Value  	Baseline  
+Reactant  	0.000000  	1.000000  	1.000000  	0.000000  
+B         	0.000000  	1.000000  	0.000000  	0.000000  
+C         	0.000000  	1.000000  	0.000000  	0.000000  
+D         	0.000000  	1.000000  	0.000000  	0.000000  
+E         	0.000000  	1.000000  	0.000000  	0.000000  
+Product   	0.000000  	1.000000  	0.000000  	0.000000  
+Overall   	0.000000  	1.000000  	N/A       	N/A       
+
+Overall RSS is 0.000000
+
+Overall R-Squared is 1.000000
+
+Rate Constant  	Value          
+kReactantB     	0.0800000000   
+kBC            	0.0200000000   
+kCC2           	0.0300000000   
+kBD            	0.0600000000   
+kDE            	0.0500000000   
+kC2E           	0.0200000000   
+kEProduct      	0.0300000000   
+
+Input mechanism file is: C:/Users/apest/OneDrive - Indiana University/Clemmer Lab/Python/Rate_Solve\example_mechanism.mec
+Input data file is: C:/Users/apest/OneDrive - Indiana University/Clemmer Lab/Python/Rate_Solve\example_clean_1_sim_data.txt
+
+
+RateSolve: Anthony Pestritto, Indiana University, Department of Chemistry. 2025
